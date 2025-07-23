@@ -4,25 +4,6 @@ A modular FastAPI application with an upload route and clean folder structure.
 
 ---
 
-## 📁 Project Structure
-
-```
-HackRx/
-├── app/
-│   ├── __init__.py
-│   ├── main.py
-│   └── routes/
-│       ├── __init__.py
-│       └── upload.py
-├── .env              # Not committed
-├── .gitignore
-├── README.md
-├── requirements.txt
-└── venv/             # Virtual environment (ignored)
-```
-
----
-
 ## ⚙️ Setup Instructions
 
 ### 1. Clone the Repository
