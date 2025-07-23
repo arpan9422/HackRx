@@ -37,3 +37,6 @@ $env:PYTHONPATH = "."
 ```bash
 uvicorn app.main:app --reload
 ```
+### 6. add these to requirements file
+``` pip install fastapi uvicorn python-multipart boto3 pypdf docx langchain openai pinecone-client python-dotenv ```
+
