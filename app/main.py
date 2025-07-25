@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes.upload import upload_router
+from app.routes.upload import upload_router
 
 app = FastAPI()
 
