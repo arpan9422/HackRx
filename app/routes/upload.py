@@ -9,5 +9,5 @@ upload_router = APIRouter()
 async def upload_doc(file: UploadFile = File(...)):
     text = await load_document(file)
     chunks = chunk_text(text)
-    embed_chunks(chunks)
+    await embed_chunks(chunks)
     return {"status": "Uploaded and stored in Pinecone"}
