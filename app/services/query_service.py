@@ -1,11 +1,12 @@
 from app.services.embedder import get_embedding
 from app.utils.pinecone_client import index
 import google.generativeai as genai
+from app.services.elasticSearch.elasticQuerySearch import elasticSearchByQuery
 from typing import List, Dict, Any
 import logging
 
 # Initialize model once at module level to avoid repeated initialization
-MODEL = genai.GenerativeModel("gemini-2.5-flash-exp")
+MODEL = genai.GenerativeModel("gemini-2.0-flash-exp")
 
 def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float = 0.7) -> str:
     """
@@ -41,8 +42,8 @@ def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float
                     high_quality_matches.append(text)
 
         # Early return if no good matches found
-        if not high_quality_matches:
-            return "I couldn't find relevant information to answer your question. Please try rephrasing or asking about a different topic."
+        # if not high_quality_matches:
+        #     return "I couldn't find relevant information to answer your question. Please try rephrasing or asking about a different topic."
 
         # Step 4: Optimize context preparation
         # Limit total context length to prevent token overflow
@@ -57,22 +58,29 @@ def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float
             current_length += len(text)
         
         context = "\n\n".join(context_parts)  # Double newline for better separation
-
+        elasticData = elasticSearchByQuery(user_query)
+        
+        # print(f"vector : {context}")
+        print(f"elastic : {elasticData}")
         # Step 5: Optimized prompt with clear instructions
         prompt = f"""Based on the following context, provide a concise and accurate answer.
 
-Context:
-{context}
+            Context:
+            context from vector search:
+            {context}
+            
+            context from elastic search:
+            {elasticData}
 
-Question: {user_query}
+            Question: {user_query}
 
-Instructions:
-- Answer in 2-3 sentences maximum
-- If the answer can be Yes/No, start with that
-- If the context doesn't contain the answer, say "The provided information doesn't contain an answer to this question"
-- Be specific and factual
+            Instructions:
+            - Answer in 2-3 sentences maximum
+            - If the answer can be Yes/No, start with that
+            - If the context doesn't contain the answer, say "The provided information doesn't contain an answer to this question"
+            - Be specific and factual
 
-Answer:"""
+            Answer:"""
 
         # Step 6: Generate response with optimized parameters
         response = MODEL.generate_content(
