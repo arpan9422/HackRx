@@ -5,6 +5,7 @@ import concurrent.futures
 from dotenv import load_dotenv
 from app.utils.pinecone_client import index  # Pinecone client for storing vectors
 import google.generativeai as genai
+from app.services.elasticSearch.elasticSearchUpsert import Upsert as ElasticUpsert
 
 # Load environment variables
 load_dotenv()
@@ -80,7 +81,13 @@ async def embed_chunks_async(chunks, source_name, metadata_info, batch_size=10):
                 print(f"✅ Batch {i+1}/{len(futures)} inserted")
             except Exception as e:
                 print(f"❌ Batch {i+1} failed: {e}")
-
+        
+        try:
+            ElasticUpsert(pinecone_data)
+            print("✅ Data upserted to ElasticSearch")
+        except Exception as e:
+            print(f"❌ ElasticSearch upsert failed: {e}")
+        
 # ---------------------------------------------
 # Entrypoint to call from other parts of system
 # ---------------------------------------------
