@@ -62,6 +62,14 @@ def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float
         
         # print(f"vector : {context}")
         print(f"elastic : {elasticData}")
+
+        # Print/log the context being used
+        print("=" * 50)
+        print("CONTEXT USED FOR RESPONSE:")
+        print("=" * 50)
+        print(context)
+        print("=" * 50)
+
         # Step 5: Optimized prompt with clear instructions
         prompt = f"""Based on the following context, provide a concise and accurate answer.
 
@@ -93,7 +101,15 @@ def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float
             )
         )
 
-        return response.text.strip()
+        final_response = response.text.strip()
+        
+        # Print/log the generated response
+        print("GENERATED RESPONSE:")
+        print("-" * 30)
+        print(final_response)
+        print("=" * 50)
+        
+        return final_response
 
     except Exception as e:
         logging.error(f"Error in query_documents: {str(e)}")
