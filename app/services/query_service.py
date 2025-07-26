@@ -5,7 +5,7 @@ from typing import List, Dict, Any
 import logging
 
 # Initialize model once at module level to avoid repeated initialization
-MODEL = genai.GenerativeModel("gemini-2.5-flash-exp")
+MODEL = genai.GenerativeModel("gemini-2.0-flash-exp")
 
 def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float = 0.7) -> str:
     """
@@ -58,6 +58,13 @@ def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float
         
         context = "\n\n".join(context_parts)  # Double newline for better separation
 
+        # Print/log the context being used
+        print("=" * 50)
+        print("CONTEXT USED FOR RESPONSE:")
+        print("=" * 50)
+        print(context)
+        print("=" * 50)
+
         # Step 5: Optimized prompt with clear instructions
         prompt = f"""Based on the following context, provide a concise and accurate answer.
 
@@ -85,7 +92,15 @@ Answer:"""
             )
         )
 
-        return response.text.strip()
+        final_response = response.text.strip()
+        
+        # Print/log the generated response
+        print("GENERATED RESPONSE:")
+        print("-" * 30)
+        print(final_response)
+        print("=" * 50)
+        
+        return final_response
 
     except Exception as e:
         logging.error(f"Error in query_documents: {str(e)}")
