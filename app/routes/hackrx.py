@@ -2,12 +2,13 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
 import aiohttp
-
+from fastapi import APIRouter, HTTPException, Depends
 from app.services.document_loader import extract_text_from_pdf
 from app.services.chunker import chunk_text
 from app.services.embedder import embed_chunks
 from app.services.query_service import query_documents
 from app.services.query_service import query_documents_batch
+from app.auth.token_auth import verify_token
 
 router = APIRouter()
 
@@ -15,7 +16,7 @@ class HackRxRequest(BaseModel):
     documents: str  # PDF URL
     questions: List[str]
 
-@router.post("/hackrx/run")
+@router.post("/hackrx/run", dependencies=[Depends(verify_token)])
 async def process_and_query(request: HackRxRequest):
     try:
         # Step 1: Download PDF
