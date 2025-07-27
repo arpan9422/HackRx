@@ -2,6 +2,8 @@ import os
 import uuid
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
+
 
 # --- Load env vars ---
 load_dotenv()
@@ -96,13 +98,20 @@ def delete_existing_chunks(source_doc):
 
 # --- Index new chunks ---
 def index_chunks(chunks):
+    actions = []
     for i, chunk in enumerate(chunks):
-        doc = {
-                
+        action = {
+            "_index": INDEX_NAME,
+            "_id": str(uuid.uuid4()),
+            "_source": {
                 "metadata": chunk["metadata"]
+            }
         }
-        es.index(index=INDEX_NAME, document=doc)
-        print(f"✅ Indexed clause {i+1}'")
+        actions.append(action)
+
+    success, _ = bulk(es, actions)
+    print(f"✅ Successfully indexed {success} clauses using bulk upload.")
+
         
 def Upsert(text_chunks):
     index_chunks(text_chunks)

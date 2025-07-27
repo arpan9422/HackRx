@@ -20,14 +20,8 @@ async def enhance_query(question: str) -> str:
 
         def generate_response():
             full_prompt = (
-                "You are a query rewriting expert for a legal and insurance document retrieval system using vector embeddings. "
-                "Your goal is to convert user questions into concise, semantically rich, declarative-style search queries. "
-                "The rewritten query must resemble how information is phrased in actual documents (e.g., contracts, policies, clauses), "
-                "not as an instruction or request. Do NOT return multiple options. Return ONLY one refined version. "
-                "Return only one single-line output with no formatting, no headings, and no options."
-                "Avoid adding explanations or formatting. Do not say 'Find', 'Analyze', or 'Compare'.\n\n"
-                f"Original question: {question}\n"
-                "Rewritten embedding search query:"
+               "You rewrite user queries into single-line, declarative statements for searching legal or insurance documents. Avoid instructions or questions—make it match how clauses are phrased in actual policies. Return only one rewritten query, no formatting, no explanations.\n\nOriginal question: {question}\nRewritten:"
+
             )
 
             return model.generate_content(full_prompt)
