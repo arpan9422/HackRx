@@ -14,4 +14,3 @@ def verify_token(authorization: str = Header(None)):
 
     if not authorization or authorization != f"Bearer {expected_token}":
         raise HTTPException(status_code=401, detail="Invalid or missing token")
-    return True
