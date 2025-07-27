@@ -1,5 +1,6 @@
 from app.services.embedder import get_embedding
 from app.utils.pinecone_client import index
+from app.services.logic import enhance_query
 import google.generativeai as genai
 from app.services.elasticSearch.elasticQuerySearch import elasticSearchByQuery
 from typing import List, Dict, Any
@@ -22,6 +23,7 @@ def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float
     """
     try:
         # Step 1: Get embedding of the user query (cached if possible)
+        user_query = enhance_query(user_query)
         query_vector = get_embedding(user_query)
 
         # Step 2: Query Pinecone with optimized parameters
