@@ -1,17 +1,11 @@
-# app/auth/token_auth.py
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from app.config import settings
 
-import os
-from fastapi import Header, HTTPException, Depends
-from dotenv import load_dotenv
+security = HTTPBearer()
 
-load_dotenv()
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
 
-def verify_token(authorization: str = Header(None)):
-    expected_token = os.getenv("HACKRX_SECRET_TOKEN")
-
-    print("Incoming Authorization:", authorization)
-    print("Expected Authorization:", f"Bearer {expected_token}")
-
-    if not authorization or authorization != f"Bearer {expected_token}":
+    if token != settings.HACKRX_SECRET_TOKEN:
         raise HTTPException(status_code=401, detail="Invalid or missing token")
-    return True
