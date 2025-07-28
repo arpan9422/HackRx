@@ -71,7 +71,6 @@ jsonpatch==1.33
 jsonpointer==3.0.0
 jsonschema==4.25.0
 jsonschema-specifications==2025.4.1
-keybert==0.9.0
 kubernetes==33.1.0
 langchain==0.3.26
 langchain-community==0.3.27
@@ -157,9 +156,7 @@ rpds-py==0.26.0
 rsa==4.9.1
 s3transfer==0.13.1
 safetensors==0.5.3
-scikit-learn==1.7.1
 scipy==1.16.0
-sentence-transformers==5.0.0
 setuptools==80.9.0
 shellingham==1.5.4
 simplejson==3.20.1
@@ -177,7 +174,6 @@ tenacity==9.1.2
 thinc==8.3.6
 threadpoolctl==3.6.0
 tokenizers==0.21.2
-torch==2.7.1
 tqdm==4.67.1
 traits==7.0.2
 transformers==4.53.3
