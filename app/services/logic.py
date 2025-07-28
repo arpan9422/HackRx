@@ -20,9 +20,14 @@ async def enhance_query(question: str) -> str:
 
         def generate_response():
             full_prompt = (
-               "You rewrite user queries into single-line, declarative statements for searching legal or insurance documents. Avoid instructions or questions—make it match how clauses are phrased in actual policies. Return only one rewritten query, no formatting, no explanations.\n\nOriginal question: {question}\nRewritten:"
+    "You are a query enhancement assistant for a legal and insurance document system.\n"
+    "Your task is to rewrite the given short or vague user question into a clear, detailed, and formal question.\n"
+    "Preserve the original intent while expanding abbreviations, inferring implied meaning, and adding context for better understanding.\n"
+    "Do not answer the question — only rewrite it.\n\n"
+    "Original question: {question}\n"
+    "Descriptive version:"
+)
 
-            )
 
             return model.generate_content(full_prompt)
 

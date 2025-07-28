@@ -94,7 +94,7 @@ def delete_existing_chunks(source_doc):
         }
     }
     es.delete_by_query(index=INDEX_NAME, body=query)
-    print(f"🗑️ Deleted old clauses for '{source_doc}'")
+    # print(f"🗑️ Deleted old clauses for '{source_doc}'")
 
 # --- Index new chunks ---
 def index_chunks(chunks):
@@ -110,10 +110,16 @@ def index_chunks(chunks):
         actions.append(action)
 
     success, _ = bulk(es, actions)
-    print(f"✅ Successfully indexed {success} clauses using bulk upload.")
+    # print(f"✅ Successfully indexed {success} clauses using bulk upload.")
+
+# --- Delete all data from the index ---
+def delete_all_documents():
+    es.delete_by_query(index=INDEX_NAME, body={"query": {"match_all": {}}})
+    # print("🗑️ Deleted ALL existing documents from index.")
 
         
 def Upsert(text_chunks):
+    delete_all_documents()
     index_chunks(text_chunks)
     return "All the clauses upserted successfully"
 

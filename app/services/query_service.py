@@ -62,7 +62,7 @@ async def query_documents(user_query: str, top_k: int = 5, similarity_threshold:
             Instructions:
             - Answer in 2-3 sentences maximum
             - If the answer can be Yes/No, start with that
-            - If the context doesn't contain the answer, say "The provided information doesn't contain an answer to this question"
+            - If the context doesn't contain the answer, give something related
             - Be specific and factual
 
             Answer: """
@@ -83,15 +83,15 @@ async def query_documents(user_query: str, top_k: int = 5, similarity_threshold:
         # First attempt
         response_text = await _run_query(user_query)
 
-        if "provided information doesn't contain an answer" in response_text.lower():
-            print("⚠️ No answer found — retrying with enhanced query...")
-            enhanced_query = await enhance_query(user_query)
-            response_text = await _run_query(enhanced_query)
+        # if "provided information doesn't contain an answer" in response_text.lower():
+        #     print("⚠️ No answer found — retrying with enhanced query...")
+        #     enhanced_query = await enhance_query(user_query)
+        #     response_text = await _run_query(enhanced_query)
 
-        print("GENERATED RESPONSE:")
-        print("-" * 30)
-        print(response_text)
-        print("=" * 50)
+        # print("GENERATED RESPONSE:")
+        # print("-" * 30)
+        # print(response_text)
+        # print("=" * 50)
 
         return response_text
 

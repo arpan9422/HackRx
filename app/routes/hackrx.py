@@ -16,7 +16,7 @@ class HackRxRequest(BaseModel):
     documents: str  # PDF URL
     questions: List[str]
 
-@router.post("/hackrx/run", dependencies=[Depends(verify_token)])
+@router.post("/run", dependencies=[Depends(verify_token)])
 async def process_and_query(request: HackRxRequest):
     try:
         # Step 1: Download PDF

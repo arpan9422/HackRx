@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from app.utils.pinecone_client import index
 import google.generativeai as genai
 from app.services.elasticSearch.elasticSearchUpsert import Upsert as ElasticUpsert
+from app.services.delete_vectors import delete_all_vectors
 
 # Load environment variables
 load_dotenv()
@@ -53,6 +54,7 @@ async def embed_chunk_async(executor, chunk):
 # -------------------------
 async def embed_chunks_async(text_chunks, source_name, metadata_info, batch_size=10):
     # STEP 0: Group clauses
+    delete_all_vectors()
     grouped_chunks = []
     for raw_text in text_chunks:
         grouped_chunks.extend(group_clauses(raw_text))
@@ -100,14 +102,14 @@ async def embed_chunks_async(text_chunks, source_name, metadata_info, batch_size
         for i, future in enumerate(concurrent.futures.as_completed(futures)):
             try:
                 future.result()
-                print(f"✅ Batch {i + 1}/{len(futures)} inserted")
+                # print(f"✅ Batch {i + 1}/{len(futures)} inserted")
             except Exception as e:
                 print(f"❌ Batch {i + 1} failed: {e}")
 
     # STEP 4: Also upsert to Elastic
     try:
         ElasticUpsert(pinecone_data)
-        print("✅ Data upserted to ElasticSearch")
+        # print("✅ Data upserted to ElasticSearch")
     except Exception as e:
         print(f"❌ ElasticSearch upsert failed: {e}")
 

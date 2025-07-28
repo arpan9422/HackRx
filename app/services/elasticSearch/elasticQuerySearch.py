@@ -75,7 +75,7 @@ def extract_keywords(query: str, top_n: int = 5) -> str:
 # --- Function to get top match from ElasticSearch using extracted keywords ---
 def search_best_clause(user_query):
     keywords = extract_keywords(user_query)
-    print(f"🔍 Extracted keywords: {keywords}")
+    # print(f"🔍 Extracted keywords: {keywords}")
 
     def run_search(query_string):
         return es.search(index=INDEX_NAME, body={
@@ -96,7 +96,7 @@ def search_best_clause(user_query):
 
     # Fallback to full query if needed
     if not response["hits"]["hits"]:
-        print("⚠️ No match with keywords. Trying full query...")
+        # print("⚠️ No match with keywords. Trying full query...")
         response = run_search(user_query)
 
     if not response["hits"]["hits"]:

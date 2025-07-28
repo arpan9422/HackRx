@@ -14,7 +14,7 @@ app.add_middleware(LoggingMiddleware)
 # Register routes
 app.include_router(upload_router, prefix="/upload")
 app.include_router(query_router, prefix="/ask")
-app.include_router(hackrx_router, prefix="/hackrx")
+app.include_router(hackrx_router, prefix="/api/v1/hackrx")
 
 
 @app.get("/")
