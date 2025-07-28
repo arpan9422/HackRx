@@ -9,3 +9,13 @@ openai
 pinecone
 python-dotenv
 google-generativeai==0.8.5
+pymupdf
+elasticsearch
+keybert
+spacy
+pydantic
+aiohttp
+pydantic-settings
+neo4j
+starlette
+langchain-google-genai
