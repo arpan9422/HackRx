@@ -1,0 +1,129 @@
+2025-07-28 23:24:58,515 | INFO | Request ID: a7b41246-49f6-4765-bcc5-ff9276546a26 | Method: GET | URL: / | Request:  | Response: {"message":"RAG API running"} | Status Code: 200 | Time: 1.85 ms
+2025-07-28 23:25:40,639 | INFO | Request ID: 48669771-e674-4289-a023-98308b182066 | Method: GET | URL: /docs | Request:  | Response: 
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+    <link rel="shortcut icon" href="https://fastapi.tiangolo.com/img/favicon.png">
+    <title>FastAPI - Swagger UI</title>
+    </head>
+    <body>
+    <div id="swagger-ui">
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <!-- `SwaggerUIBundle` is now available on the page -->
+    <script>
+    const ui = SwaggerUIBundle({
+        url: '/openapi.json',
+    "dom_id": "#swagger-ui",
+"layout": "BaseLayout",
+"deepLinking": true,
+"showExtensions": true,
+"showCommonExtensions": true,
+oauth2RedirectUrl: window.location.origin + '/docs/oauth2-redirect',
+    presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIBundle.SwaggerUIStandalonePreset
+        ],
+    })
+    </script>
+    </body>
+    </html>
+     | Status Code: 200 | Time: 0.73 ms
+2025-07-28 23:25:41,050 | INFO | Request ID: 550d05e1-acce-48ad-b4e8-dc830a24f914 | Method: GET | URL: /openapi.json | Request:  | Response: {"openapi":"3.1.0","info":{"title":"FastAPI","version":"0.1.0"},"paths":{"/upload/upload/":{"post":{"tags":["Upload"],"summary":"Upload Doc","operationId":"upload_doc_upload_upload__post","requestBody":{"content":{"multipart/form-data":{"schema":{"$ref":"#/components/schemas/Body_upload_doc_upload_upload__post"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}}}},"/ask/query":{"post":{"summary":"Query Route","operationId":"query_route_ask_query_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/QueryRequest"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"HTTPBearer":[]}]}},"/api/v1/hackrx/run":{"post":{"summary":"Process And Query","operationId":"process_and_query_api_v1_hackrx_run_post","requestBody":{"content":{"application/json":{"schema":{"$ref":"#/components/schemas/HackRxRequest"}}},"required":true},"responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}},"422":{"description":"Validation Error","content":{"application/json":{"schema":{"$ref":"#/components/schemas/HTTPValidationError"}}}}},"security":[{"HTTPBearer":[]}]}},"/":{"get":{"summary":"Root","operationId":"root__get","responses":{"200":{"description":"Successful Response","content":{"application/json":{"schema":{}}}}}}}},"components":{"schemas":{"Body_upload_doc_upload_upload__post":{"properties":{"file":{"type":"string","format":"binary","title":"File"}},"type":"object","required":["file"],"title":"Body_upload_doc_upload_upload__post"},"HTTPValidationError":{"properties":{"detail":{"items":{"$ref":"#/components/schemas/ValidationError"},"type":"array","title":"Detail"}},"type":"object","title":"HTTPValidationError"},"HackRxRequest":{"properties":{"documents":{"type":"string","title":"Documents"},"questions":{"items":{"type":"string"},"type":"array","title":"Questions"}},"type":"object","required":["documents","questions"],"title":"HackRxRequest"},"QueryRequest":{"properties":{"query":{"items":{},"type":"array","title":"Query"}},"type":"object","required":["query"],"title":"QueryRequest"},"ValidationError":{"properties":{"loc":{"items":{"anyOf":[{"type":"string"},{"type":"integer"}]},"type":"array","title":"Location"},"msg":{"type":"string","title":"Message"},"type":{"type":"string","title":"Error Type"}},"type":"object","required":["loc","msg","type"],"title":"ValidationError"}},"securitySchemes":{"HTTPBearer":{"type":"http","scheme":"bearer"}}}} | Status Code: 200 | Time: 12.11 ms
+2025-07-28 23:26:23,254 | INFO | Request ID: dc401f03-2315-4074-b572-1b05b9d619de | Method: POST | URL: /api/v1/hackrx/run | Request: {
+    "documents": "https://hackrx.blob.core.windows.net/assets/policy.pdf?sv=2023-01-03&st=2025-07-04T09%3A11%3A24Z&se=2027-07-05T09%3A11%3A00Z&sr=b&sp=r&sig=N4a9OU0w0QXO6AOIBiu4bpl7AXvEZogeT%2FjUHNO7HzQ%3D",
+    "questions": [
+        "What is the grace period for premium payment under the National Parivar Mediclaim Plus Policy?",
+        "What is the waiting period for pre-existing diseases (PED) to be covered?",
+        "Does this policy cover maternity expenses, and what are the conditions?",
+        "What is the waiting period for cataract surgery?",
+        "Are the medical expenses for an organ donor covered under this policy?",
+        "What is the No Claim Discount (NCD) offered in this policy?",
+        "Is there a benefit for preventive health check-ups?",
+        "How does the policy define a 'Hospital'?",
+        "What is the extent of coverage for AYUSH treatments?",
+        "Are there any sub-limits on room rent and ICU charges for Plan A?"
+    ]
+} | Response: {"detail":"Not authenticated"} | Status Code: 403 | Time: 2.22 ms
+2025-07-28 23:27:38,743 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_delete_by_query [status:200 duration:0.656s]
+2025-07-28 23:27:41,346 | INFO | PUT https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/_bulk [status:200 duration:2.592s]
+2025-07-28 23:27:42,244 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:43,768 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:44,571 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:45,471 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:46,173 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:46,947 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:48,069 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:48,796 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:49,848 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:50,573 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:27:50,575 | INFO | Request ID: 2f46046e-6b22-4a3c-917a-7eaec8f26ad5 | Method: POST | URL: /api/v1/hackrx/run | Request: {
+    "documents": "https://hackrx.blob.core.windows.net/assets/policy.pdf?sv=2023-01-03&st=2025-07-04T09%3A11%3A24Z&se=2027-07-05T09%3A11%3A00Z&sr=b&sp=r&sig=N4a9OU0w0QXO6AOIBiu4bpl7AXvEZogeT%2FjUHNO7HzQ%3D",
+    "questions": [
+        "What is the grace period for premium payment under the National Parivar Mediclaim Plus Policy?",
+        "What is the waiting period for pre-existing diseases (PED) to be covered?",
+        "Does this policy cover maternity expenses, and what are the conditions?",
+        "What is the waiting period for cataract surgery?",
+        "Are the medical expenses for an organ donor covered under this policy?",
+        "What is the No Claim Discount (NCD) offered in this policy?",
+        "Is there a benefit for preventive health check-ups?",
+        "How does the policy define a 'Hospital'?",
+        "What is the extent of coverage for AYUSH treatments?",
+        "Are there any sub-limits on room rent and ICU charges for Plan A?"
+    ]
+} | Response: {"answer":["I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again."]} | Status Code: 200 | Time: 35723.04 ms
+2025-07-28 23:30:09,680 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_delete_by_query [status:200 duration:0.286s]
+2025-07-28 23:30:14,431 | INFO | PUT https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/_bulk [status:200 duration:4.740s]
+2025-07-28 23:30:15,613 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:17,505 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:23,918 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:25,362 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:26,307 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:27,597 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:28,755 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:30,167 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:31,882 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:33,457 | ERROR | Error in query_documents: name 'search_best_clause' is not defined
+2025-07-28 23:30:33,460 | INFO | Request ID: 726d26c7-94ac-42b8-bac0-088149993298 | Method: POST | URL: /api/v1/hackrx/run | Request: {
+    "documents": "https://hackrx.blob.core.windows.net/assets/policy.pdf?sv=2023-01-03&st=2025-07-04T09%3A11%3A24Z&se=2027-07-05T09%3A11%3A00Z&sr=b&sp=r&sig=N4a9OU0w0QXO6AOIBiu4bpl7AXvEZogeT%2FjUHNO7HzQ%3D",
+    "questions": [
+        "What is the grace period for premium payment under the National Parivar Mediclaim Plus Policy?",
+        "What is the waiting period for pre-existing diseases (PED) to be covered?",
+        "Does this policy cover maternity expenses, and what are the conditions?",
+        "What is the waiting period for cataract surgery?",
+        "Are the medical expenses for an organ donor covered under this policy?",
+        "What is the No Claim Discount (NCD) offered in this policy?",
+        "Is there a benefit for preventive health check-ups?",
+        "How does the policy define a 'Hospital'?",
+        "What is the extent of coverage for AYUSH treatments?",
+        "Are there any sub-limits on room rent and ICU charges for Plan A?"
+    ]
+} | Response: {"answer":["I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again.","I encountered an error while processing your question. Please try again."]} | Status Code: 200 | Time: 43025.4 ms
+2025-07-28 23:33:17,663 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_delete_by_query [status:200 duration:0.320s]
+2025-07-28 23:33:21,556 | INFO | PUT https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/_bulk [status:200 duration:3.884s]
+2025-07-28 23:33:24,757 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:1.253s]
+2025-07-28 23:33:28,392 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:0.291s]
+2025-07-28 23:33:33,826 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:0.603s]
+2025-07-28 23:33:39,909 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:0.361s]
+2025-07-28 23:33:45,342 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:0.340s]
+2025-07-28 23:33:51,742 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:0.300s]
+2025-07-28 23:33:56,185 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:0.659s]
+2025-07-28 23:34:00,279 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:0.387s]
+2025-07-28 23:34:05,035 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:0.372s]
+2025-07-28 23:34:08,871 | INFO | POST https://eed15d67315146a1910718ac4ac7ab9e.us-central1.gcp.cloud.es.io:443/hackrx/_search [status:200 duration:0.312s]
+2025-07-28 23:34:10,025 | INFO | Request ID: 4aa6f3b5-7570-473f-b491-e4fa7bcc1f91 | Method: POST | URL: /api/v1/hackrx/run | Request: {
+    "documents": "https://hackrx.blob.core.windows.net/assets/policy.pdf?sv=2023-01-03&st=2025-07-04T09%3A11%3A24Z&se=2027-07-05T09%3A11%3A00Z&sr=b&sp=r&sig=N4a9OU0w0QXO6AOIBiu4bpl7AXvEZogeT%2FjUHNO7HzQ%3D",
+    "questions": [
+        "What is the grace period for premium payment under the National Parivar Mediclaim Plus Policy?",
+        "What is the waiting period for pre-existing diseases (PED) to be covered?",
+        "Does this policy cover maternity expenses, and what are the conditions?",
+        "What is the waiting period for cataract surgery?",
+        "Are the medical expenses for an organ donor covered under this policy?",
+        "What is the No Claim Discount (NCD) offered in this policy?",
+        "Is there a benefit for preventive health check-ups?",
+        "How does the policy define a 'Hospital'?",
+        "What is the extent of coverage for AYUSH treatments?",
+        "Are there any sub-limits on room rent and ICU charges for Plan A?"
+    ]
+} | Response: {"answer":["Yes, the policy can be renewed within a grace period of 30 days to maintain continuity of benefits. However, coverage is not available during the grace period.","Coverage for pre-existing diseases (PEDs) begins after a waiting period of 36 months. However, this waiting period can be reduced based on prior health insurance coverage. The policy also specifies waiting periods for certain conditions like hypertension, diabetes, and cardiac conditions, which may be 90 days or one year.","Yes, the policy covers maternity expenses, including medical treatment expenses traceable to childbirth (including complicated deliveries and caesarean sections) and lawful medical termination of pregnancy. However, there's a waiting period of 24 months, and the insured person must be between 18 and 45 years of age. Domiciliary hospitalization does not cover expenses incurred for maternity or infertility.","Cataract surgery has a waiting period of two years, as it is listed under the \"Two years waiting period\" section. However, after 36 months of continuous coverage, there is a limit for cataract surgery of up to 15% of the Sum Insured or INR 60,000, whichever is lower.","No, the policy has specific exclusions related to organ transplants. These exclusions include pre- and post-hospitalization medical expenses of the organ donor, costs associated with organ acquisition, experimental transplants, complications in respect of the donor, and expenses related to organ transportation or preservation.","Yes, a No Claim Discount (NCD) of a flat 5% is allowed on the base premium for policies with a one-year term, provided no claims are reported. For policies exceeding one year, the NCD amount is aggregated for each claim-free year, but the total NCD cannot exceed 5% of the total base premium for the policy term.","Yes, health check-up expenses are reimbursed (irrespective of past claims) at the end of a block of two continuous policy years, provided the policy has been continuously renewed without a break. Expenses payable are subject to the limit stated in the Table of Benefits.","The policy defines a hospital as an entity registered with local authorities under the Clinical Establishments Act, 2010, or complying with minimum criteria. It also mentions that treatment under anesthesia in a hospital/day care center for less than 24 hours due to technological advancement, which would have otherwise required longer hospitalization, can be considered.","Yes, the company will indemnify medical expenses for inpatient care under Ayurveda, Yoga and Naturopathy, Unani, Siddha and Homeopathy systems during each policy period up to the sum insured as specified in the policy schedule in any AYUSH Hospital. An AYUSH Hospital is defined as a healthcare facility where treatments are carried out by AYUSH Medical Practitioners.","Yes, room charges and intensive care unit charges per day are payable up to the limit as shown in the Table of Benefits for Plan A. However, the limit shall not apply if the treatment is undergone for a listed procedure in a Preferred Provider Network (PPN) as a package."]} | Status Code: 200 | Time: 73857.4 ms
