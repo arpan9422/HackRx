@@ -137,9 +137,16 @@ curl -X POST "http://localhost:8000/api/v1/hackrx/run" \
 ## Project Structure
 ```text
 app/
-├── core/security.py
-├── routes/query_router.py, upload_router.py
-├── services/query_service.py
+├── auth/
+│   ├── __init__.py
+│   └── token_auth.py
+├── routes/
+│   ├── __init__.py
+│   ├── query_router.py
+│   └── upload_router.py
+├── services/
+│   ├── __init__.py
+│   └── query_service.py
 ├── config.py
 └── main.py
 .env
