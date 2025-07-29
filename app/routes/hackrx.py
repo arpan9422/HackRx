@@ -38,7 +38,7 @@ async def process_and_query(request: HackRxRequest):
         # Step 5: Query for answers (same as query_router)
         try:
             answers = await query_documents_batch(request.questions)
-            return {"answer":answers}
+            return {"answers":answers}
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Query error: {str(e)}")
 
