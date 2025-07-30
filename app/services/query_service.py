@@ -6,24 +6,25 @@ from app.services.elasticSearch.elasticQuerySearch import elasticSearchByQuery
 from typing import List, Dict, Any
 import logging
 
-# Initialize model once at module level to avoid repeated initialization
+# Initialize Gemini model
 MODEL = genai.GenerativeModel("gemini-2.0-flash")
 
-async def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float = 0.7) -> str:
+async def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float = 0.7, namespace: str = "default") -> str:
     """
-    Efficiently query documents using RAG with optimizations for performance.
+    Efficiently query documents using RAG with Pinecone namespace filtering.
     """
     try:
         async def _run_query(query: str) -> str:
             # Step 1: Get embedding of the query
             query_vector = get_embedding(query)
 
-            # Step 2: Query Pinecone
+            # Step 2: Query Pinecone with namespace
             response = index.query(
                 vector=query_vector,
                 top_k=top_k,
                 include_metadata=True,
-                include_values=False
+                include_values=False,
+                namespace=namespace  # <-- added here
             )
 
             # Step 3: Filter matches
@@ -37,7 +38,6 @@ async def query_documents(user_query: str, top_k: int = 5, similarity_threshold:
             # Step 4: Prepare context
             max_context_length = 3000
             context_parts, current_length = [], 0
-
             for text in high_quality_matches:
                 if current_length + len(text) > max_context_length:
                     break
@@ -45,8 +45,8 @@ async def query_documents(user_query: str, top_k: int = 5, similarity_threshold:
                 current_length += len(text)
 
             context = "\n\n".join(context_parts)
-            elasticData = elasticSearchByQuery(query)
-            # print(context)
+            elasticData = elasticSearchByQuery(query, index_name=namespace)
+
             # Step 5: Prompt
             prompt = f"""Based on the following context, provide a concise and accurate answer.
 
@@ -62,7 +62,8 @@ async def query_documents(user_query: str, top_k: int = 5, similarity_threshold:
             Instructions:
             - Answer in 2-3 sentences maximum
             - If the answer can be Yes/No, start with that
-            - If the context doesn't contain the answer, give something related
+            - If the question is very vague from the context subject say "Not relevant to the context"
+            - If the context doesn't contain the answer, give relevent information not found in the context
             - Be specific and factual
 
             Answer: """
@@ -80,59 +81,36 @@ async def query_documents(user_query: str, top_k: int = 5, similarity_threshold:
 
             return response.text.strip()
 
-        # First attempt
         response_text = await _run_query(user_query)
-
-        # if "provided information doesn't contain an answer" in response_text.lower():
-        #     print("⚠️ No answer found — retrying with enhanced query...")
-        #     enhanced_query = await enhance_query(user_query)
-        #     response_text = await _run_query(enhanced_query)
-
-        # print("GENERATED RESPONSE:")
-        # print("-" * 30)
-        # print(response_text)
-        # print("=" * 50)
-
         return response_text
 
     except Exception as e:
         logging.error(f"Error in query_documents: {str(e)}")
-        print(f"Error in query_documents: {str(e)}")
+        print(f"❌ Error processing query: {e}")
         return "I encountered an error while processing your question. Please try again."
 
 
-async def query_documents_batch(queries: List[str], top_k: int = 5) -> List[str]:
+async def query_documents_batch(queries: List[str], top_k: int = 5, namespace: str = "default") -> List[str]:
     """
-    Process multiple queries efficiently in batch.
-    
-    Args:
-        queries: List of user queries
-        top_k: Number of top matches per query
-    
-    Returns:
-        List of responses corresponding to each query
+    Process multiple queries efficiently in batch with namespace support.
     """
     results = []
-    
-    # Get all embeddings at once if your embedder supports batch processing
     try:
         for query in queries:
-            result =await query_documents(query, top_k)
+            result = await query_documents(query, top_k, namespace=namespace)
             results.append(result)
     except Exception as e:
         logging.error(f"Batch processing error: {str(e)}")
         results = ["Error processing query" for _ in queries]
-    
     return results
 
 
-# Optional: Add caching decorator for frequently asked questions
 from functools import lru_cache
 
 @lru_cache(maxsize=100)
-def query_documents_cached(user_query: str, top_k: int = 5) -> str:
+def query_documents_cached(user_query: str, top_k: int = 5, namespace: str = "default") -> str:
     """
     Cached version of query_documents for frequently asked questions.
-    Use this for queries that are likely to be repeated.
     """
-    return query_documents(user_query, top_k)
+    import asyncio
+    return asyncio.run(query_documents(user_query, top_k, namespace=namespace))
