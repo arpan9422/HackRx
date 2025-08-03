@@ -46,7 +46,7 @@ def search_best_clause(user_query: str, index_name: str) -> dict:
 
     def run_search(query_string):
         return es.search(index=index_name, body={
-            "size": 10,
+            "size": 5,
             "query": {
                 "match": {
                     "metadata.text": {
@@ -81,11 +81,9 @@ def search_best_clause(user_query: str, index_name: str) -> dict:
         results.append({
             "score": hit["_score"],
             "text": hit["_source"]["metadata"]["text"],
-            "source_doc": hit["_source"].get("source_doc"),
-            "clause_id": hit["_source"].get("clause_id"),
-            "metadata": hit["_source"].get("metadata", {})
+            
         })
-
+    print(results)
     return results
 
 # --- Final callable function ---

@@ -65,6 +65,8 @@ async def query_documents(user_query: str, top_k: int = 5, similarity_threshold:
             - If the question is very vague from the context subject say "Not relevant to the context"
             - If the context doesn't contain the answer, give relevent information not found in the context
             - Be specific and factual
+            - give the email, name or phone number what ever is asked
+            - there is a posibility that you will get multiple small questions in a same question so give answer from multiple context
 
             Answer: """
 
