@@ -1,18 +1,16 @@
 import os
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
-import google.generativeai as genai
+from keybert import KeyBERT
 
 # --- Load environment variables ---
 load_dotenv()
 
 ELASTIC_CLOUD_URL = os.getenv("ELASTIC_CLOUD_URL")
 ELASTIC_API_KEY = os.getenv("ELASTIC_API_KEY")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# --- Configure Gemini ---
-genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-2.0-flash")
+# --- Initialize KeyBERT model ---
+kw_model = KeyBERT(model='all-MiniLM-L6-v2')
 
 # --- Connect to Elasticsearch ---
 es = Elasticsearch(
@@ -21,26 +19,18 @@ es = Elasticsearch(
     verify_certs=True
 )
 
-# --- Extract keywords from query using Gemini ---
+# --- Extract keywords from query using KeyBERT ---
 def extract_keywords(query: str, top_n: int = 5) -> str:
-    prompt = f"""
-    Extract the top {top_n} most important keywords or key phrases from the following query.
-    Return them as a single line, comma-separated only (no numbers or bullets or new lines).
-    Query: "{query}"
-    """
     try:
-        response = model.generate_content(prompt)
-        keywords = response.text.strip()
-
-        # Optional: clean output
-        keywords = keywords.replace("\n", "").strip()
-        return keywords
+        keywords = kw_model.extract_keywords(query, keyphrase_ngram_range=(1, 3), stop_words='english', top_n=top_n)
+        keyword_phrases = [kw[0] for kw in keywords]
+        return ", ".join(keyword_phrases)
     except Exception as e:
-        print(f"❌ Gemini keyword extraction failed: {e}")
+        print(f"❌ KeyBERT keyword extraction failed: {e}")
         return query  # fallback
 
 # --- Search top matching clause from Elasticsearch ---
-def search_best_clause(user_query: str, index_name: str) -> dict:
+def search_best_clause(user_query: str, index_name: str) -> list[dict]:
     keywords = extract_keywords(user_query)
     print(f"🔍 Extracted keywords: {keywords}")
 
@@ -67,13 +57,13 @@ def search_best_clause(user_query: str, index_name: str) -> dict:
         response = run_search(user_query)
 
     if not response["hits"]["hits"]:
-        return {
+        return [{
             "score": 0.0,
             "text": "❌ No relevant clause found.",
             "source_doc": None,
             "clause_id": None,
             "metadata": {}
-        }
+        }]
 
     # Return top 3 results
     results = []
@@ -81,9 +71,10 @@ def search_best_clause(user_query: str, index_name: str) -> dict:
         results.append({
             "score": hit["_score"],
             "text": hit["_source"]["metadata"]["text"],
-            
+            "source_doc": hit["_source"]["metadata"].get("source_doc"),
+            "clause_id": hit["_source"]["metadata"].get("clause_id"),
+            "metadata": hit["_source"]["metadata"]
         })
-    print(results)
     return results
 
 # --- Final callable function ---
