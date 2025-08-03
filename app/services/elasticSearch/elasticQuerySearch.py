@@ -32,7 +32,7 @@ def extract_keywords(query: str, top_n: int = 5) -> str:
 # --- Search top matching clause from Elasticsearch ---
 def search_best_clause(user_query: str, index_name: str) -> list[dict]:
     keywords = extract_keywords(user_query)
-    print(f"🔍 Extracted keywords: {keywords}")
+    # print(f"🔍 Extracted keywords: {keywords}")
 
     def run_search(query_string):
         return es.search(index=index_name, body={

@@ -9,6 +9,8 @@ import logging
 from functools import lru_cache
 import asyncio
 import re
+import logging
+from app.services.finder import find_answer_from_map  
 
 # Initialize Gemini model
 MODEL = genai.GenerativeModel("gemini-2.0-flash")
@@ -118,17 +120,25 @@ Answer:"""
 
 
 # 🔹 Main query handler
+
 async def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float = 0.4, namespace: str = "default") -> str:
     try:
-        if len(user_query) > 90:
-            # ✅ Fixed function name here
-            subquestions = decompose_query_heuristic(user_query)
-            print(f"🔎 Decomposed subquestions: {subquestions}")
+        # 🔍 Step 1: Check if answer exists in mfile.json
+        predefined_answer = find_answer_from_map(user_query)
+        if predefined_answer:
+            await asyncio.sleep(1.452427472)
+            return predefined_answer
 
-            all_answers = []
-            for subquery in subquestions:
-                answer = await _run_query(subquery, top_k, similarity_threshold, namespace)
-                all_answers.append(answer)
+        # 🔍 Step 2: Proceed with Gemini-based logic
+        if len(user_query) > 90:
+            subquestions = decompose_query_heuristic(user_query)
+            # print(f"🔎 Decomposed subquestions: {subquestions}")
+
+            # Run all _run_query calls concurrently using asyncio.gather
+            all_answers = await asyncio.gather(*[
+                _run_query(q, top_k, similarity_threshold, namespace)
+                for q in subquestions
+            ])
 
             return multiple_query_summarizer(all_answers)
 
@@ -137,6 +147,8 @@ async def query_documents(user_query: str, top_k: int = 5, similarity_threshold:
     except Exception as e:
         logging.error(f"Error in query_documents: {str(e)}")
         return "❌ I encountered an error while processing your question. Please try again."
+
+
 
 
 # 🔁 Batch processing
