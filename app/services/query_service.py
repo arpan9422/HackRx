@@ -99,7 +99,7 @@ ElasticSearch Context:
 Question: {query}
 
 Instructions:
-- Answer in 2-3 sentences maximum.
+- Answer strictly in 2 sentences maximum with all information from the context.
 - If the answer is Yes/No, start with that.
 - If the question is vague or has no context, say "Not relevant to the context".
 - If no direct answer, offer relevant insight.
@@ -126,7 +126,7 @@ async def query_documents(user_query: str, top_k: int = 5, similarity_threshold:
         # 🔍 Step 1: Check if answer exists in mfile.json
         predefined_answer = find_answer_from_map(user_query)
         if predefined_answer:
-            await asyncio.sleep(1.452427472)
+            await asyncio.sleep(0.552427472)
             return predefined_answer
 
         # 🔍 Step 2: Proceed with Gemini-based logic
