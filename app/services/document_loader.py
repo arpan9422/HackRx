@@ -143,8 +143,8 @@ def extract_text_from_docx(data: bytes) -> str:
             continue
             
         # Skip footer content
-        if is_footer_content(text):
-            continue
+        # if is_footer_content(text):
+        #     continue
         
         # Preserve paragraph structure
         formatted_text = format_paragraph_structure(text, para)
