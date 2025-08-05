@@ -6,18 +6,47 @@ import os
 import io
 import re
 from typing import List, Dict, Tuple
+from app.services.parser.excel import extract_text_from_excel_bytes, extract_text_from_image_bytes, extract_text_from_pptx_with_ocr, extract_text_from_csv_bytes, extract_text_from_nested_zip, extract_text_from_txt
 
-async def load_document(file: UploadFile) -> str:
-    contents = await file.read()
-    filename = file.filename.lower()
+from typing import Tuple
+import aiohttp
+import io
+
+import httpx
+
+async def download_file(url: str) -> tuple[str, bytes]:
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        response.raise_for_status()
+        filename = url.split("?")[0].split("/")[-1]  # Extract file name
+        return filename, response.content
+
+
+
+
+async def load_document(url: str) -> str:
+    filename, contents = await download_file(url)
+    filename = filename.lower()
 
     if filename.endswith(".pdf"):
-        return extract_text_from_pdf(contents)
+        return extract_text_from_pdf(contents)  # contents is bytes
     elif filename.endswith(".docx"):
         return extract_text_from_docx(contents)
+    elif filename.endswith(".xls") or filename.endswith(".xlsx"):
+        return extract_text_from_excel_bytes(contents)
+    elif filename.endswith(".pptx"):
+        return extract_text_from_pptx_with_ocr(contents)
+    elif filename.endswith(".csv"):
+        return extract_text_from_csv_bytes(contents)
+    elif filename.endswith(".zip"):
+        return extract_text_from_nested_zip(contents)
+    elif filename.endswith(".txt"):
+        return extract_text_from_txt(contents)
+    elif filename.endswith(".png") or filename.endswith(".jpg") or filename.endswith(".jpeg"):
+        return extract_text_from_image_bytes(contents)
     else:
-        return contents.decode()
-
+        raise ValueError("Unsupported file format")
+    
 
 def is_footer_content(text: str, page_height: float = None, y_position: float = None) -> bool:
     """
