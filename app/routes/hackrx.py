@@ -4,13 +4,15 @@ from typing import List
 import aiohttp
 import os
 import json
-
-from app.services.document_loader import extract_text_from_pdf
+from starlette.datastructures import UploadFile as StarletteUploadFile
+import tempfile
+from app.services.document_loader import load_document
 from app.services.chunker import chunk_text
 from app.services.embedder import embed_chunks
 from app.services.query_service import query_documents_batch
 from app.auth.token_auth import verify_token
 from app.routes.indexmaker import generate_namespace_index
+import io
 
 router = APIRouter()
 
@@ -59,7 +61,11 @@ async def process_and_query(request: HackRxRequest):
                 document_bytes = await resp.read()
 
         # 🧾 Extract text
-        text = extract_text_from_pdf(document_bytes)
+        filename = os.path.basename(document_url)
+        upload_file = StarletteUploadFile(filename=filename, file=io.BytesIO(document_bytes))
+
+
+        text = await load_document(document_url)
         if not text.strip():
             raise HTTPException(status_code=400, detail="Extracted document is empty.")
         

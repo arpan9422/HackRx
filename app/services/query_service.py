@@ -104,7 +104,10 @@ Instructions:
 - If the question is vague or has no context, say "Not relevant to the context".
 - If no direct answer, offer relevant insight.
 - Be specific and factual.
-
+- give only precise information without any additional commentary.
+- don't add words like "chunk"
+- don't add source file name or document.pdf or any other metadata strictly
+-don't add any extra information that is not present in the context strictly
 Answer:"""
 
     response = MODEL.generate_content(
