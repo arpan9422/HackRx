@@ -13,6 +13,53 @@ import aiohttp
 import io
 
 import httpx
+from bs4 import BeautifulSoup
+
+async def extract_landmark(url: str) -> str:
+    async with httpx.AsyncClient() as client:
+        response = await client.get("https://register.hackrx.in/submissions/myFavouriteCity")
+        response.raise_for_status()
+        json_data = response.json()
+
+    city = json_data["data"]["city"]
+
+    flight_url_mapping = {
+        "Delhi": "https://register.hackrx.in/teams/public/flights/getFirstCityFlightNumber",
+        "Hyderabad": "https://register.hackrx.in/teams/public/flights/getSecondCityFlightNumber",
+        "New York": "https://register.hackrx.in/teams/public/flights/getThirdCityFlightNumber",
+        "Istanbul": "https://register.hackrx.in/teams/public/flights/getFourthCityFlightNumber"
+    }
+
+    url_to_fetch = flight_url_mapping.get(
+        city, "https://register.hackrx.in/teams/public/flights/getFifthCityFlightNumber"
+    )
+
+    async with httpx.AsyncClient() as client:
+        res = await client.get(url_to_fetch)
+        res.raise_for_status()
+        res_data = res.json()
+        flightno = res_data["data"]["flightNumber"].strip()
+        return flightno
+    
+    
+async def extract_token_from_webpage(url: str) -> str:
+    """
+    Fetches an HTML webpage and extracts the content of the element with id="token".
+    """
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        response.raise_for_status()
+
+    html = response.text
+    soup = BeautifulSoup(html, 'html.parser')
+    token_element = soup.find(id="token")
+
+    if token_element:
+        return token_element.get_text(strip=True)
+    else:
+        raise ValueError("Element with id='token' not found in the webpage.")
+    
+
 
 async def download_file(url: str) -> tuple[str, bytes]:
     async with httpx.AsyncClient() as client:
@@ -25,6 +72,15 @@ async def download_file(url: str) -> tuple[str, bytes]:
 
 
 async def load_document(url: str) -> str:
+
+    if "hackrx/rounds/FinalRound4SubmissionPDF" in url:
+        flightno = await extract_landmark(url)
+        return flightno
+
+    if "hackrx.in/utils/get-secret-token" in url:
+        token = await extract_token_from_webpage(url)
+        return token
+    
     filename, contents = await download_file(url)
     filename = filename.lower()
 
