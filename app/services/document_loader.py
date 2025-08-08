@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 
 async def extract_landmark(url: str) -> str:
     async with httpx.AsyncClient() as client:
-        response = await client.get(url)
+        response = await client.get("https://register.hackrx.in/submissions/myFavouriteCity")
         response.raise_for_status()
         json_data = response.json()
 
