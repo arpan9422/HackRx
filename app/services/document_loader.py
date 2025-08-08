@@ -13,6 +13,26 @@ import aiohttp
 import io
 
 import httpx
+import bs4
+
+async def extract_token_from_webpage(url: str) -> str:
+    """
+    Fetches an HTML webpage and extracts the content of the element with id="token".
+    """
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        response.raise_for_status()
+
+    html = response.text
+    soup = BeautifulSoup(html, 'html.parser')
+    token_element = soup.find(id="token")
+
+    if token_element:
+        return token_element.get_text(strip=True)
+    else:
+        raise ValueError("Element with id='token' not found in the webpage.")
+    
+
 
 async def download_file(url: str) -> tuple[str, bytes]:
     async with httpx.AsyncClient() as client:
@@ -25,6 +45,10 @@ async def download_file(url: str) -> tuple[str, bytes]:
 
 
 async def load_document(url: str) -> str:
+    if "hackrx.in/utils/get-secret-token" in url:
+        token = await extract_token_from_webpage(url)
+        return token
+    
     filename, contents = await download_file(url)
     filename = filename.lower()
 
