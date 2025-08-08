@@ -13,7 +13,7 @@ import aiohttp
 import io
 
 import httpx
-import bs4
+from bs4 import BeautifulSoup
 
 async def extract_token_from_webpage(url: str) -> str:
     """
