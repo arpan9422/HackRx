@@ -46,7 +46,6 @@ You have these partial answers to sub-questions (or retrieved contexts):
 - Keep it **concise**—aim for 3–5 sentences maximum.
 - Maintain a **natural, human tone** (as if you’re explaining to a friend).
 - Start with “Yes” or “No” when appropriate.
-- Try to answer in same language as of in the question.
 - **Do not** prefix with “Here’s a summary” or use list formatting.
 - **Do not** omit any critical detail that answers the user’s question.
 
@@ -107,7 +106,6 @@ Instructions:
 - Be specific and factual.
 - give only precise information without any additional commentary.
 - don't add words like "chunk"
-- Try to answer in same language as of in the question.
 - don't add source file name or document.pdf or any other metadata strictly
 -don't add any extra information that is not present in the context strictly
 Answer:"""

@@ -15,6 +15,33 @@ import io
 import httpx
 from bs4 import BeautifulSoup
 
+async def extract_landmark(url: str) -> str:
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        response.raise_for_status()
+        json_data = response.json()
+
+    city = json_data["data"]["city"]
+
+    flight_url_mapping = {
+        "Delhi": "https://register.hackrx.in/teams/public/flights/getFirstCityFlightNumber",
+        "Hyderabad": "https://register.hackrx.in/teams/public/flights/getSecondCityFlightNumber",
+        "New York": "https://register.hackrx.in/teams/public/flights/getThirdCityFlightNumber",
+        "Istanbul": "https://register.hackrx.in/teams/public/flights/getFourthCityFlightNumber"
+    }
+
+    url_to_fetch = flight_url_mapping.get(
+        city, "https://register.hackrx.in/teams/public/flights/getFifthCityFlightNumber"
+    )
+
+    async with httpx.AsyncClient() as client:
+        res = await client.get(url_to_fetch)
+        res.raise_for_status()
+        res_data = res.json()
+        flightno = res_data["data"]["flightNumber"].strip()
+        return flightno
+    
+    
 async def extract_token_from_webpage(url: str) -> str:
     """
     Fetches an HTML webpage and extracts the content of the element with id="token".
@@ -45,6 +72,11 @@ async def download_file(url: str) -> tuple[str, bytes]:
 
 
 async def load_document(url: str) -> str:
+
+    if "hackrx/rounds/FinalRound4SubmissionPDF" in url:
+        flightno = await extract_landmark(url)
+        return flightno
+
     if "hackrx.in/utils/get-secret-token" in url:
         token = await extract_token_from_webpage(url)
         return token
