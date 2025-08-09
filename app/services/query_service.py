@@ -10,7 +10,6 @@ from functools import lru_cache
 import asyncio
 import re
 import logging
-from app.services.finder import find_answer_from_map  
 
 # Initialize Gemini model
 MODEL = genai.GenerativeModel("gemini-2.0-flash")
@@ -106,7 +105,7 @@ Instructions:
 - Be specific and factual.
 - give only precise information without any additional commentary.
 - don't add words like "chunk"
-- don't add source file name or document.pdf or any other metadata strictly
+- don't add source file name or document or any other metadata strictly
 -don't add any extra information that is not present in the context strictly
 Answer:"""
 
@@ -126,11 +125,7 @@ Answer:"""
 
 async def query_documents(user_query: str, top_k: int = 5, similarity_threshold: float = 0.4, namespace: str = "default") -> str:
     try:
-        # 🔍 Step 1: Check if answer exists in mfile.json
-        predefined_answer = find_answer_from_map(user_query)
-        if predefined_answer:
-            await asyncio.sleep(0.552427472)
-            return predefined_answer
+        
 
         # 🔍 Step 2: Proceed with Gemini-based logic
         if len(user_query) > 90:
