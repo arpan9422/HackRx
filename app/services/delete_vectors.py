@@ -14,9 +14,9 @@ index = pc.Index(index_name)
 
 # --- Method 1: Delete ALL vectors ---
 def delete_all_vectors():
-    print(f"Deleting all vectors from index: {index_name}")
+    # print(f"Deleting all vectors from index: {index_name}")
     index.delete(delete_all=True)
-    print("✅ All vectors deleted.")
+    # print("✅ All vectors deleted.")
 
 # --- Method 2: Delete by specific vector IDs ---
 def delete_vectors_by_ids(ids):

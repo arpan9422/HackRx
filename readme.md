@@ -142,6 +142,38 @@ app/
 ├── services/query_service.py
 ├── config.py
 └── main.py
+=======
+aapp/
+├── auth/
+│   ├── __init__.py
+│   └── token_auth.py
+├── logger/
+│   └── logger.py
+├── routes/
+│   ├── __init__.py
+│   ├── hackxx.py
+│   ├── indexmaker.py
+│   ├── query_router.py
+│   ├── upload.py
+│   ├── upload_router.py
+│   └── vector_search.py
+├── services/
+│   ├── GraphDB/
+│   ├── elasticSearch/
+│   │   ├── elasticQuerySearch.py
+│   │   └── elasticSearchUpsert.py
+├── parser/
+│   ├── excel.py
+│   ├── chunker.py
+│   ├── delete_vectors.py
+│   ├── document_loader.py
+│   ├── embedder.py
+│   ├── logic.py
+│   ├── processor.py
+│   └── query_service.py
+├── utils/
+│   ├── file_parser.py
+│   └── pinecone_client.py
 .env
 requirements.txt
 ```

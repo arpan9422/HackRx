@@ -4,120 +4,83 @@ from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 
-
-# --- Load env vars ---
+# --- Load environment variables ---
 load_dotenv()
 ELASTIC_CLOUD_URL = os.getenv("ELASTIC_CLOUD_URL")
 ELASTIC_API_KEY = os.getenv("ELASTIC_API_KEY")
-INDEX_NAME = os.getenv("INDEX_NAME")
 
-# --- Dynamic source doc (can also be passed via CLI) ---
-SOURCE_DOC = "DummyPolicy.pdf"
-
-# --- Connect to Elastic ---
+# --- Connect to Elasticsearch ---
 es = Elasticsearch(
     ELASTIC_CLOUD_URL,
     api_key=ELASTIC_API_KEY,
     verify_certs=True
 )
 
-# --- Dummy chunks to insert ---
-text_chunks = [
-    {
-        "text": "Clause 1: Coverage begins after 30 days of continuous enrollment.",
-        "metadata": {"waiting_period": "30 days", "category": "General", "coverage_limit": None, "age_limit": None}
-    },
-    {
-        "text": "Clause 2: Hospitalization due to accidents is covered from day one.",
-        "metadata": {"waiting_period": "0 days", "category": "Emergency", "coverage_limit": None, "age_limit": None}
-    },
-    {
-        "text": "Clause 3: Pre-existing conditions are not covered for the first 12 months.",
-        "metadata": {"waiting_period": "12 months", "category": "Pre-existing", "coverage_limit": None, "age_limit": None}
-    },
-    {
-        "text": "Clause 4: Daycare procedures are covered without any waiting period.",
-        "metadata": {"waiting_period": "0 days", "category": "Daycare", "coverage_limit": None, "age_limit": None}
-    },
-    {
-        "text": "Clause 5: Maternity benefits are applicable after a waiting period of 9 months.",
-        "metadata": {"waiting_period": "9 months", "category": "Maternity", "coverage_limit": "50,000", "age_limit": None}
-    },
-    {
-        "text": "Clause 6: OPD consultation charges are not reimbursed under this policy.",
-        "metadata": {"waiting_period": None, "category": "Exclusion", "coverage_limit": None, "age_limit": None}
-    },
-    {
-        "text": "Clause 7: Room rent is covered up to INR 5,000 per day.",
-        "metadata": {"waiting_period": None, "category": "Hospitalization", "coverage_limit": "5000/day", "age_limit": None}
-    },
-    {
-        "text": "Clause 8: ICU charges are reimbursed up to actuals within sum insured.",
-        "metadata": {"waiting_period": None, "category": "Hospitalization", "coverage_limit": "Actuals", "age_limit": None}
-    },
-    {
-        "text": "Clause 9: Organ donor expenses are covered under the basic sum insured.",
-        "metadata": {"waiting_period": None, "category": "Transplant", "coverage_limit": "Within Sum Insured", "age_limit": None}
-    },
-    {
-        "text": "Clause 10: Knee and hip replacement surgeries are covered after 3 months.",
-        "metadata": {"waiting_period": "3 months", "category": "Orthopedic", "coverage_limit": None, "age_limit": None}
-    },
-    # ... add more clauses like this ...
-]
-
-
 # --- Create index if it doesn't exist ---
-if not es.indices.exists(index=INDEX_NAME):
-    es.indices.create(
-        index=INDEX_NAME,
-        body={
-            "settings": {"number_of_shards": 1, "number_of_replicas": 0},
-            "mappings": {
-                "properties": {
-                    "clause_id": {"type": "keyword"},
-                    "text": {"type": "text"},
-                    "source_doc": {"type": "keyword"},
-                    "metadata": {"type": "object"}
+def create_index_if_not_exists(index_name):
+    if not es.indices.exists(index=index_name):
+        es.indices.create(
+            index=index_name,
+            body={
+                "settings": {"number_of_shards": 1, "number_of_replicas": 0},
+                "mappings": {
+                    "properties": {
+                        "clause_id": {"type": "keyword"},
+                        "text": {"type": "text"},
+                        "source_doc": {"type": "keyword"},
+                        "metadata": {"type": "object"}
+                    }
                 }
             }
-        }
-    )
+        )
+        print(f"✅ Created index: {index_name}")
 
-# --- Delete old chunks for this source_doc ---
-def delete_existing_chunks(source_doc):
-    query = {
-        "query": {
-            "term": {
-                "source_doc": source_doc
-            }
-        }
-    }
-    es.delete_by_query(index=INDEX_NAME, body=query)
-    print(f"🗑️ Deleted old clauses for '{source_doc}'")
+# --- Delete all documents from the index ---
+def delete_all_documents(index_name):
+    es.delete_by_query(index=index_name, body={"query": {"match_all": {}}})
+    print(f"🗑️ Deleted all documents from index: {index_name}")
 
 # --- Index new chunks ---
-def index_chunks(chunks):
+def index_chunks(chunks, index_name):
     actions = []
     for i, chunk in enumerate(chunks):
         action = {
-            "_index": INDEX_NAME,
+            "_index": index_name,
             "_id": str(uuid.uuid4()),
             "_source": {
-                "metadata": chunk["metadata"]
+                "text": chunk.get("text", ""),
+                "metadata": chunk["metadata"],
+                "source_doc": chunk.get("source_doc", "unknown"),
+                "clause_id": f"clause_{i + 1}"
             }
         }
         actions.append(action)
 
     success, _ = bulk(es, actions)
-    print(f"✅ Successfully indexed {success} clauses using bulk upload.")
+    print(f"✅ Indexed {success} documents into {index_name}")
+    return success
 
-        
-def Upsert(text_chunks):
-    index_chunks(text_chunks)
-    return "All the clauses upserted successfully"
+# --- Upsert Function ---
+def Upsert(text_chunks, index_name):
+    create_index_if_not_exists(index_name)
+    # delete_all_documents(index_name)
+    indexed = index_chunks(text_chunks, index_name)
+    return f"✅ {indexed} clauses upserted to index '{index_name}'"
 
-# --- Main ---
+# --- Main block for testing ---
 if __name__ == "__main__":
-    delete_existing_chunks(SOURCE_DOC)
-    print("🚀 Done deleting old clauses.")
+    # Example test chunks
+    test_chunks = [
+        {
+            "text": "Clause 1: Coverage begins after 30 days of continuous enrollment.",
+            "metadata": {"waiting_period": "30 days", "category": "General"}
+        },
+        {
+            "text": "Clause 2: Accidental hospitalization is covered from day one.",
+            "metadata": {"waiting_period": "0 days", "category": "Emergency"}
+        }
+    ]
+
+    namespace = "policy_test_index_001"  # Dynamic index name
+    result = Upsert(test_chunks, index_name=namespace)
+    print(result)

@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from app.utils.pinecone_client import index
 import google.generativeai as genai
 from app.services.elasticSearch.elasticSearchUpsert import Upsert as ElasticUpsert
+from app.services.delete_vectors import delete_all_vectors
 
 # Load environment variables
 load_dotenv()
@@ -51,8 +52,9 @@ async def embed_chunk_async(executor, chunk):
 # -------------------------
 # Main async function
 # -------------------------
-async def embed_chunks_async(text_chunks, source_name, metadata_info, batch_size=10):
+async def embed_chunks_async(text_chunks, source_name, metadata_info, batch_size=10, np='default'):
     # STEP 0: Group clauses
+    # delete_all_vectors()
     grouped_chunks = []
     for raw_text in text_chunks:
         grouped_chunks.extend(group_clauses(raw_text))
@@ -81,7 +83,9 @@ async def embed_chunks_async(text_chunks, source_name, metadata_info, batch_size
             "document_type": metadata_info.get("document_type", "unknown"),
             "language": metadata_info.get("language", "en"),
             "doc_version": metadata_info.get("doc_version", "v1.0"),
-            "chunk_index": i
+            "chunk_index": i,
+            "namespace": np,
+            "source_name": source_name
         }
 
         pinecone_data.append({
@@ -95,24 +99,25 @@ async def embed_chunks_async(text_chunks, source_name, metadata_info, batch_size
         futures = []
         for i in range(0, len(pinecone_data), batch_size):
             batch = pinecone_data[i:i + batch_size]
-            futures.append(thread_pool.submit(index.upsert, batch))
+            futures.append(thread_pool.submit(index.upsert, batch, namespace=np))
+
 
         for i, future in enumerate(concurrent.futures.as_completed(futures)):
             try:
                 future.result()
-                print(f"✅ Batch {i + 1}/{len(futures)} inserted")
+                # print(f"✅ Batch {i + 1}/{len(futures)} inserted")
             except Exception as e:
                 print(f"❌ Batch {i + 1} failed: {e}")
 
     # STEP 4: Also upsert to Elastic
     try:
-        ElasticUpsert(pinecone_data)
-        print("✅ Data upserted to ElasticSearch")
+        ElasticUpsert(pinecone_data, index_name=np)
+        # print("✅ Data upserted to ElasticSearch")
     except Exception as e:
         print(f"❌ ElasticSearch upsert failed: {e}")
 
 # -------------------------------
 # Entrypoint function
 # -------------------------------
-async def embed_chunks(chunks, source_name="/Users/shubhamrade/Desktop/Bajaj/BAJHLIP23020V012223.pdf", metadata_info={}):
-    await embed_chunks_async(chunks, source_name, metadata_info)
+async def embed_chunks(chunks,np='default'):
+    await embed_chunks_async(chunks, source_name ="/Users/shubhamrade/Desktop/Bajaj/BAJHLIP23020V012223.pdf" , metadata_info = {},np=np)
